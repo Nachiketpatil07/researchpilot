@@ -1,5 +1,6 @@
 """Qdrant (embedded, on-disk) holding a dense and a sparse (BM25) vector per chunk."""
 
+import threading
 from collections import defaultdict
 from dataclasses import dataclass, field
 
@@ -50,6 +51,30 @@ class Hit:
         return f"pp. {self.page_start}-{self.page_end}"
 
 
+class _Serialized:
+    """Proxy that runs every method of the wrapped object under one lock.
+
+    Embedded (local-mode) Qdrant is not built for concurrent access, and the API serves
+    requests from a thread pool. Only the client calls are serialized; embedding and
+    reranking (the slow parts) still run in parallel.
+    """
+
+    def __init__(self, obj):
+        self._obj = obj
+        self._lock = threading.RLock()
+
+    def __getattr__(self, name):
+        attr = getattr(self._obj, name)
+        if not callable(attr):
+            return attr
+
+        def locked(*args, **kwargs):
+            with self._lock:
+                return attr(*args, **kwargs)
+
+        return locked
+
+
 class VectorStore:
     def __init__(self, settings: Settings, local_models: LocalModels):
         self.settings = settings
@@ -57,7 +82,7 @@ class VectorStore:
         self.name = settings.collection
         settings.qdrant_path.mkdir(parents=True, exist_ok=True)
         # Embedded mode: no server needed. Only one process may open the path at a time.
-        self.client = QdrantClient(path=str(settings.qdrant_path))
+        self.client = _Serialized(QdrantClient(path=str(settings.qdrant_path)))
         self._ensure_collection()
 
     def _ensure_collection(self) -> None:

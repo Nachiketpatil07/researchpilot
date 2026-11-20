@@ -5,8 +5,26 @@ finds, rewrites queries or falls back to the web when the documents fall short, 
 its own answer against the sources. Hybrid retrieval, cross-encoder reranking, contextual
 chunking, and answers with checkable citations. Runs for $0 (free LLM tier + local CPU models).
 
-> Status: **Steps 1-2 of 5 done** (retrieval core + agent). Web UI, evaluation dashboard
+> Status: **Steps 1-3 of 5 done** (retrieval core, agent, web UI). Evaluation dashboard
 > and deployment are next.
+
+![Agent steps streaming live](docs/screenshots/agent-steps.jpg)
+
+| Answer with clickable citations (paper + web sources) | Retrieval playground: 4 strategies side by side |
+|---|---|
+| ![Answer with citations](docs/screenshots/answer-citations.jpg) | ![Retrieval playground](docs/screenshots/playground.jpg) |
+
+## Web UI (Next.js 16 + Tailwind 4)
+
+- **Ask**: watch the agent work step by step (plan, retrieve, grade, rewrite, web search,
+  generate, verify) with timings, queries and routing decisions; the answer streams in with
+  `[n]` citation chips that jump to the source passage; a groundedness badge lists any
+  unsupported claims. Toggle **Agent / Simple** to compare against single-pass RAG.
+- **Retrieval playground**: one query through dense, BM25, hybrid and hybrid+rerank side by
+  side; the same chunk keeps the same colour in every column, so you can see reranking at work.
+- **Documents**: upload PDF/Markdown/text (drag and drop), see page/chunk counts, remove documents.
+- Streams `POST /ask` Server-Sent Events with `fetch` + a small parser (EventSource is GET-only).
+- Responsive (drawer sidebar on phones), light and dark mode.
 
 ## The agent (LangGraph)
 
@@ -47,6 +65,12 @@ against its evidence ([Self-RAG](https://arxiv.org/abs/2310.11511)).
   the answer.
 - **Reasoning models need token headroom.** gpt-oss spends tokens thinking first, so short
   JSON replies get extra `max_tokens` and `reasoning_effort: low`.
+- **The UI found a race condition the CLI never could.** The page requests `/health` and
+  `/documents` at the same moment; FastAPI runs both in its thread pool, both lazily created
+  the vector store, and embedded Qdrant (one client per folder) crashed the second one. The
+  browser reported it as a CORS error, because a 500 response has no CORS headers. Fix: create
+  singletons under a lock, warm them up at startup, and serialize the Qdrant client calls.
+  Verified with 12 concurrent requests.
 
 ## Retrieval core
 
@@ -95,6 +119,14 @@ python -m app.cli ask "..." --simple         # single-pass pipeline, no agent
 uvicorn app.api:app --reload --port 8000     # API docs at http://localhost:8000/docs
 ```
 
+Then the web UI, in a second terminal (needs Node.js 20.9+):
+
+```powershell
+cd frontend
+npm install
+npm run dev                                  # http://localhost:3000
+```
+
 Embedded Qdrant allows one process at a time, so stop the API server before using the CLI.
 Runtime data (index, model cache, uploads, samples) lives in `~/.researchpilot` (override with
 `DATA_DIR` in `.env`); a short path avoids the Windows 260-character path limit.
@@ -125,6 +157,6 @@ Runtime data (index, model cache, uploads, samples) lives in `~/.researchpilot` 
 
 1. ~~Core: ingest, hybrid search, rerank, cited answers~~
 2. ~~LangGraph agent: query decomposition, relevance grading, query rewrite, web-search fallback, groundedness check~~
-3. Next.js UI: live agent steps, citations, retrieval playground
+3. ~~Next.js UI: live agent steps, citations, retrieval playground~~
 4. Evaluation: synthetic test set, recall@k / MRR, faithfulness, answer relevance
 5. Deploy: Vercel + Hugging Face Spaces

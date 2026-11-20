@@ -1,5 +1,6 @@
 """FastAPI app. Run: uvicorn app.api:app --reload --port 8000"""
 
+import asyncio
 import json
 import logging
 import re
@@ -26,6 +27,8 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(messag
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
+    # Load models and open the vector store before serving, off the event loop.
+    await asyncio.to_thread(get_services().warm_up)
     yield
     get_services().close()
 
