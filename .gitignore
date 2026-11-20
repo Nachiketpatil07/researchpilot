@@ -1,0 +1,23 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+
+# runtime data (kept in ~/.researchpilot by default)
+backend/data/
+
+# node / next.js
+node_modules/
+.next/
+
+# editors / OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
