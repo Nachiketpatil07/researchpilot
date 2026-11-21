@@ -107,10 +107,13 @@ export default function AppShell() {
         </header>
 
         {replayMode && (
-          <div className="border-b border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-200">
-            <span className="font-medium">Replay demo.</span> You&apos;re watching recorded runs of the real agent
-            (same events, same pace). Try the example questions and playground queries; the Evaluation tab shows the
-            real results.{" "}
+          <div className="border-b border-indigo-200 bg-indigo-50 px-4 py-2 text-xs text-indigo-900 sm:text-sm dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-200">
+            <span className="font-medium">Replay demo.</span>{" "}
+            <span className="hidden sm:inline">
+              You&apos;re watching recorded runs of the real agent (same events, same pace). Try the example questions
+              and playground queries; the Evaluation tab shows the real results.{" "}
+            </span>
+            <span className="sm:hidden">Recorded runs of the real agent. </span>
             <a
               href="https://github.com/Nachiketpatil07/researchpilot#setup-windows"
               target="_blank"
