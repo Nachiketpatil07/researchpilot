@@ -5,7 +5,8 @@ finds, rewrites queries or falls back to the web when the documents fall short, 
 its own answer against the sources. Hybrid retrieval, cross-encoder reranking, contextual
 chunking, and answers with checkable citations. Runs for $0 (free LLM tier + local CPU models).
 
-> Status: **Steps 1-4 of 5 done** (retrieval core, agent, web UI, evaluation). Deployment is next.
+**[Live demo →](https://researchpilot-maverick-154e.vercel.app)** (replay of recorded runs of
+the real agent; [how the demo works](#deployment))
 
 **Measured, not assumed:** on a 30-question test set, the final retrieval pipeline puts the
 source passage first **60%** of the time (MRR@10 **0.690**, +78% over dense-only), and answers
@@ -263,4 +264,7 @@ the large model as judge used the whole daily budget.
 2. ~~LangGraph agent: query decomposition, relevance grading, query rewrite, web-search fallback, groundedness check~~
 3. ~~Next.js UI: live agent steps, citations, retrieval playground~~
 4. ~~Evaluation: synthetic test set, hit@k / MRR, reranker comparison, LLM-judged correctness and faithfulness~~
-5. Deploy: replay site on Vercel + live backend through a tunnel (replay recording pending the Groq daily reset)
+5. ~~Deploy: [replay site on Vercel](https://researchpilot-maverick-154e.vercel.app) + live backend through a Cloudflare tunnel~~
+
+Next ideas: a multi-hop / out-of-corpus test set (where the agent should win), and keeping
+chunks the reranker is very confident about from being dropped by the grader.
