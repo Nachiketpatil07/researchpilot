@@ -63,6 +63,53 @@ export interface SearchResult {
   hits: Source[];
 }
 
+export interface RetrievalMetrics {
+  "hit@1": number;
+  "hit@3": number;
+  "hit@5": number;
+  "hit@10": number;
+  "mrr@10": number;
+  latency_ms: number;
+}
+
+export interface SystemSummary {
+  n: number;
+  errors: number;
+  correctness: number | null;
+  faithfulness: number | null;
+  context_recall: number | null;
+  latency_s: number | null;
+  web_rate: number | null;
+}
+
+export interface SystemRun {
+  answer?: string;
+  latency_s?: number;
+  found_source?: boolean;
+  correctness?: number | null;
+  faithfulness?: number | null;
+  note?: string;
+  used_web?: boolean;
+  rewrites?: number;
+  self_check?: string | null;
+  error?: string;
+}
+
+export interface EvalReport {
+  created_at: string;
+  config: Record<string, string | number | null>;
+  retrieval: {
+    modes: Record<RetrievalMode, RetrievalMetrics>;
+    per_question: { id: string; ranks: Record<RetrievalMode, number | null> }[];
+  };
+  answers: null | {
+    judge_model: string;
+    systems: Partial<Record<"simple" | "agent", SystemSummary>>;
+    per_question: ({ id: string } & Partial<Record<"simple" | "agent", SystemRun>>)[];
+  };
+  testset: { id: string; question: string; reference: string; source: string; title: string; pages: string }[];
+}
+
 // ---------- helpers ----------
 
 async function json<T>(res: Response): Promise<T> {
@@ -95,6 +142,9 @@ export function uploadDocuments(files: File[]) {
     }>,
   );
 }
+
+export const getEvalReport = () =>
+  fetch(`${API_URL}/eval/latest`, { cache: "no-store" }).then(json<EvalReport>);
 
 export const search = (query: string, mode: RetrievalMode, top_n = 5) =>
   fetch(`${API_URL}/search`, {

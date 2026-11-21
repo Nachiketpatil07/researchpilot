@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { API_URL, getHealth, listDocuments, type DocumentInfo, type Health } from "@/lib/api";
 import AskView from "./AskView";
+import EvalView from "./EvalView";
 import Playground from "./Playground";
 import Sidebar from "./Sidebar";
 import { IconMenu, IconX } from "./icons";
 
-type Tab = "ask" | "playground";
+type Tab = "ask" | "playground" | "eval";
 
 export default function AppShell() {
   const [tab, setTab] = useState<Tab>("ask");
@@ -72,7 +73,8 @@ export default function AppShell() {
             {(
               [
                 ["ask", "Ask"],
-                ["playground", "Retrieval playground"],
+                ["playground", "Playground"],
+                ["eval", "Evaluation"],
               ] as const
             ).map(([t, label]) => (
               <button
@@ -116,6 +118,9 @@ export default function AppShell() {
           </div>
           <div className={tab === "playground" ? "h-full" : "hidden"}>
             <Playground disabled={backendDown || (health?.chunks ?? 0) === 0} />
+          </div>
+          <div className={tab === "eval" ? "h-full" : "hidden"}>
+            <EvalView active={tab === "eval"} />
           </div>
         </div>
       </main>

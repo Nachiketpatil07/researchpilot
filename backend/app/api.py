@@ -119,6 +119,16 @@ def search(req: SearchRequest):
     }
 
 
+@app.get("/eval/latest")
+def eval_latest():
+    """Latest evaluation report (written by `python -m app.cli eval-run`)."""
+    from .evaluation import LATEST_PATH
+
+    if not LATEST_PATH.exists():
+        raise HTTPException(404, "No evaluation report yet. Run: python -m app.cli eval-run")
+    return json.loads(LATEST_PATH.read_text(encoding="utf-8"))
+
+
 def _sse(event: str, data) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 

@@ -3,6 +3,10 @@
 :root {
   --background: #fafafa;
   --foreground: #18181b;
+  /* Chart series (validated palette: CVD + contrast pass in both modes) */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --track: #e4e4e7;
 }
 
 @theme inline {
@@ -16,6 +20,9 @@
   :root {
     --background: #09090b;
     --foreground: #f4f4f5;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --track: #27272a;
   }
 }
 

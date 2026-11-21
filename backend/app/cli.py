@@ -129,6 +129,50 @@ def cmd_ask(args) -> None:
             print(f"== groundedness: {ev['grounded']}" + "".join(f"\n   - unsupported: {c}" for c in ev["unsupported"]))
 
 
+def cmd_eval_generate(args) -> None:
+    from .evaluation.testset import generate_testset, save_testset
+
+    svc = get_services()
+    print(f"Generating {args.n} questions (seed {args.seed})...")
+    items = generate_testset(svc, svc.llm(), n=args.n, seed=args.seed)
+    save_testset(items)
+    print(f"Saved {len(items)} questions to backend/eval/testset.json")
+
+
+def cmd_eval_run(args) -> None:
+    from .evaluation.runner import build_report, eval_answers, eval_retrieval, save_report
+    from .evaluation.testset import load_testset
+
+    svc = get_services()
+    testset = load_testset()
+    if args.limit:
+        testset = testset[: args.limit]
+    print(f"== retrieval ({len(testset)} questions)")
+    retrieval = eval_retrieval(svc, testset)
+    for mode, m in retrieval["modes"].items():
+        print(f"  {mode:<14} hit@1={m['hit@1']:.2f} hit@5={m['hit@5']:.2f} hit@10={m['hit@10']:.2f} "
+              f"mrr={m['mrr@10']:.3f} {m['latency_ms']}ms")
+
+    answers, llm = None, None
+    systems = [s for s in args.systems.split(",") if s]
+    if systems:
+        llm = svc.llm()
+        print(f"== answers: {', '.join(systems)} (judge: {llm.models[args.judge]})")
+        answers = eval_answers(svc, llm, testset, systems, judge_tier=args.judge)
+        for name, s in answers["systems"].items():
+            print(f"  {name:<6} " + " ".join(f"{k}={v}" for k, v in s.items()))
+    path = save_report(build_report(svc, llm or svc.llm_or_none(), testset, retrieval, answers))
+    print(f"Report: {path}")
+
+
+def cmd_eval_rerankers(_args) -> None:
+    from .evaluation.rerankers import compare_rerankers
+    from .evaluation.testset import load_testset
+
+    compare_rerankers(get_services(), load_testset())
+    print("Saved backend/eval/results/rerankers.json")
+
+
 def main() -> None:
     sys.stdout.reconfigure(encoding="utf-8")
     logging.basicConfig(level=logging.WARNING)
@@ -156,6 +200,23 @@ def main() -> None:
     s.add_argument("--simple", action="store_true", help="single-pass pipeline instead of the agent")
     s.add_argument("--mode", choices=MODES, default="hybrid_rerank", help="retrieval mode for --simple")
     s.set_defaults(fn=cmd_ask)
+
+    s = sub.add_parser("eval-generate", help="build the synthetic test set")
+    s.add_argument("--n", type=int, default=30)
+    s.add_argument("--seed", type=int, default=42)
+    s.set_defaults(fn=cmd_eval_generate)
+
+    s = sub.add_parser("eval-run", help="score retrieval and answers, write eval/results/latest.json")
+    s.add_argument("--systems", default="simple,agent", help="comma list; empty string = retrieval only")
+    # A full run with the big model as judge used Groq's whole free daily budget (200k tokens)
+    # for gpt-oss-120b, so the default judge is the fast model; pass --judge answer if you can.
+    s.add_argument("--judge", choices=["answer", "fast"], default="fast", help="model tier used as judge")
+    s.add_argument("--limit", type=int, default=0, help="only the first N questions")
+    s.set_defaults(fn=cmd_eval_run)
+
+    sub.add_parser("eval-rerankers", help="compare cross-encoder rerankers on the test set").set_defaults(
+        fn=cmd_eval_rerankers
+    )
 
     args = p.parse_args()
     try:

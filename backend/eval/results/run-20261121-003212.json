@@ -1,0 +1,626 @@
+{
+  "created_at": "2026-11-20T23:32:12+00:00",
+  "config": {
+    "questions": 30,
+    "documents": 5,
+    "llm_provider": "groq",
+    "answer_model": "openai/gpt-oss-120b",
+    "fast_model": "openai/gpt-oss-20b",
+    "dense_model": "BAAI/bge-small-en-v1.5",
+    "rerank_model": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "retrieve_k": 20,
+    "chunk_size": 1200,
+    "context_mode": "header"
+  },
+  "retrieval": {
+    "modes": {
+      "dense": {
+        "hit@1": 0.2333,
+        "hit@3": 0.4667,
+        "hit@5": 0.6,
+        "hit@10": 0.7,
+        "mrr@10": 0.3865,
+        "latency_ms": 11.2
+      },
+      "sparse": {
+        "hit@1": 0.5,
+        "hit@3": 0.7333,
+        "hit@5": 0.8,
+        "hit@10": 0.8333,
+        "mrr@10": 0.6243,
+        "latency_ms": 34.0
+      },
+      "hybrid": {
+        "hit@1": 0.4667,
+        "hit@3": 0.6333,
+        "hit@5": 0.7667,
+        "hit@10": 0.7667,
+        "mrr@10": 0.5744,
+        "latency_ms": 40.8
+      },
+      "hybrid_rerank": {
+        "hit@1": 0.3333,
+        "hit@3": 0.5667,
+        "hit@5": 0.6667,
+        "hit@10": 0.8333,
+        "mrr@10": 0.487,
+        "latency_ms": 827.2
+      }
+    },
+    "per_question": [
+      {
+        "id": "q01",
+        "ranks": {
+          "dense": 2,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 3
+        }
+      },
+      {
+        "id": "q02",
+        "ranks": {
+          "dense": 1,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q03",
+        "ranks": {
+          "dense": 2,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 9
+        }
+      },
+      {
+        "id": "q04",
+        "ranks": {
+          "dense": 5,
+          "sparse": 3,
+          "hybrid": 5,
+          "hybrid_rerank": 2
+        }
+      },
+      {
+        "id": "q05",
+        "ranks": {
+          "dense": 1,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q06",
+        "ranks": {
+          "dense": 3,
+          "sparse": 2,
+          "hybrid": 2,
+          "hybrid_rerank": 2
+        }
+      },
+      {
+        "id": "q07",
+        "ranks": {
+          "dense": null,
+          "sparse": null,
+          "hybrid": null,
+          "hybrid_rerank": null
+        }
+      },
+      {
+        "id": "q08",
+        "ranks": {
+          "dense": null,
+          "sparse": 5,
+          "hybrid": null,
+          "hybrid_rerank": 8
+        }
+      },
+      {
+        "id": "q09",
+        "ranks": {
+          "dense": 2,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 4
+        }
+      },
+      {
+        "id": "q10",
+        "ranks": {
+          "dense": null,
+          "sparse": 1,
+          "hybrid": 2,
+          "hybrid_rerank": 4
+        }
+      },
+      {
+        "id": "q11",
+        "ranks": {
+          "dense": 1,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q12",
+        "ranks": {
+          "dense": null,
+          "sparse": null,
+          "hybrid": null,
+          "hybrid_rerank": null
+        }
+      },
+      {
+        "id": "q13",
+        "ranks": {
+          "dense": null,
+          "sparse": null,
+          "hybrid": null,
+          "hybrid_rerank": 6
+        }
+      },
+      {
+        "id": "q14",
+        "ranks": {
+          "dense": null,
+          "sparse": 2,
+          "hybrid": 5,
+          "hybrid_rerank": 8
+        }
+      },
+      {
+        "id": "q15",
+        "ranks": {
+          "dense": null,
+          "sparse": 1,
+          "hybrid": 2,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q16",
+        "ranks": {
+          "dense": 4,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q17",
+        "ranks": {
+          "dense": null,
+          "sparse": null,
+          "hybrid": null,
+          "hybrid_rerank": null
+        }
+      },
+      {
+        "id": "q18",
+        "ranks": {
+          "dense": 2,
+          "sparse": 3,
+          "hybrid": 2,
+          "hybrid_rerank": 2
+        }
+      },
+      {
+        "id": "q19",
+        "ranks": {
+          "dense": 2,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q20",
+        "ranks": {
+          "dense": 2,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 2
+        }
+      },
+      {
+        "id": "q21",
+        "ranks": {
+          "dense": 1,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q22",
+        "ranks": {
+          "dense": 8,
+          "sparse": 2,
+          "hybrid": 3,
+          "hybrid_rerank": 2
+        }
+      },
+      {
+        "id": "q23",
+        "ranks": {
+          "dense": 1,
+          "sparse": 2,
+          "hybrid": 1,
+          "hybrid_rerank": null
+        }
+      },
+      {
+        "id": "q24",
+        "ranks": {
+          "dense": 1,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q25",
+        "ranks": {
+          "dense": 7,
+          "sparse": 4,
+          "hybrid": 4,
+          "hybrid_rerank": 4
+        }
+      },
+      {
+        "id": "q26",
+        "ranks": {
+          "dense": 7,
+          "sparse": null,
+          "hybrid": null,
+          "hybrid_rerank": null
+        }
+      },
+      {
+        "id": "q27",
+        "ranks": {
+          "dense": null,
+          "sparse": 9,
+          "hybrid": null,
+          "hybrid_rerank": 6
+        }
+      },
+      {
+        "id": "q28",
+        "ranks": {
+          "dense": 5,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 3
+        }
+      },
+      {
+        "id": "q29",
+        "ranks": {
+          "dense": 5,
+          "sparse": 2,
+          "hybrid": 4,
+          "hybrid_rerank": 1
+        }
+      },
+      {
+        "id": "q30",
+        "ranks": {
+          "dense": 1,
+          "sparse": 1,
+          "hybrid": 1,
+          "hybrid_rerank": 1
+        }
+      }
+    ]
+  },
+  "answers": null,
+  "testset": [
+    {
+      "id": "q01",
+      "question": "In Corrective Retrieval Augmented Generation, how are the confidence thresholds used to trigger corrective actions on retrieved documents?",
+      "reference": "The system defines upper and lower confidence thresholds; documents with scores above the upper threshold are marked Correct, below the lower threshold are marked Incorrect, and scores in between trigger an Ambiguous action. Each document is processed individually and the results are integrated.",
+      "doc_id": "0e2f3be9769d9301",
+      "source": "corrective-rag-2024.pdf",
+      "title": "Corrective Retrieval Augmented Generation",
+      "pages": "5",
+      "chunk_id": "8543200d-6ae0-5a16-9b7a-5796e4273020"
+    },
+    {
+      "id": "q02",
+      "question": "In the GraphRAG approach, how does the prompting procedure generate high-level questions that require global understanding of the corpus?",
+      "reference": "The procedure prompts the LLM to describe personas of K users, identify N tasks for each user, and then generate M high-level questions per user-task pair that require understanding of the entire corpus and do not rely on low-level fact retrieval, producing a total of K∗N∗M questions.",
+      "doc_id": "23555efb73adfb94",
+      "source": "graphrag-2024.pdf",
+      "title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+      "pages": "6-7",
+      "chunk_id": "e05bee43-b4b4-518d-98b0-11e35fd1f04d"
+    },
+    {
+      "id": "q03",
+      "question": "In Self-RAG, how does the model handle irrelevant retrieved passages during inference?",
+      "reference": "Self-RAG processes passages in parallel and filters out irrelevant ones through self-reflection, without relying on external models at inference.",
+      "doc_id": "53dea3c23b57c451",
+      "source": "self-rag-2023.pdf",
+      "title": "SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION",
+      "pages": "3",
+      "chunk_id": "9d0075b9-c413-511b-a213-f0d7af421488"
+    },
+    {
+      "id": "q04",
+      "question": "In Retrieval-Augmented Generation, how does the model’s training strategy differ from that of closed-book QA approaches when handling open-domain QA datasets?",
+      "reference": "RAG models generate answers while exploiting retrieval of documents, whereas closed-book QA models generate answers solely from parametric knowledge without retrieval. RAG is initialized on large datasets like Natural Questions and then fine-tuned on smaller datasets such as CuratedTrec and WebQuestions, following DPR’s approach.",
+      "doc_id": "62d3275b909c065c",
+      "source": "rag-lewis-2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "pages": "4",
+      "chunk_id": "5fda4107-04af-5ea7-9c1a-0faa768ea756"
+    },
+    {
+      "id": "q05",
+      "question": "In Self-RAG, how does the self‑correction mechanism affect performance compared to simply adding web search knowledge?",
+      "reference": "The self‑correction mechanism significantly outperforms models that are only supplemented with web search knowledge in all cases, indicating that the performance gains are primarily due to this mechanism.",
+      "doc_id": "0e2f3be9769d9301",
+      "source": "corrective-rag-2024.pdf",
+      "title": "Corrective Retrieval Augmented Generation",
+      "pages": "10",
+      "chunk_id": "6325a030-c9ba-5fef-8319-af3804ccd2f8"
+    },
+    {
+      "id": "q06",
+      "question": "In Self-RAG, how does inference-time customization affect the influence of different critique types on the final generation sampling?",
+      "reference": "Self-RAG’s framework allows researchers to control the weight of each critique type during inference, thereby adjusting how much each critique influences the final generation sampling.",
+      "doc_id": "53dea3c23b57c451",
+      "source": "self-rag-2023.pdf",
+      "title": "SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION",
+      "pages": "9",
+      "chunk_id": "b78ce787-293a-5617-88b9-84bd4c777475"
+    },
+    {
+      "id": "q07",
+      "question": "In Retrieval-Augmented Generation, how does the system retrieve documents for a given query?",
+      "reference": "For a query x, the system uses Maximum Inner Product Search (MIPS) to find the top‑K documents z_i from the pre‑trained retriever (Query Encoder + Document Index).",
+      "doc_id": "62d3275b909c065c",
+      "source": "rag-lewis-2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "pages": "1-2",
+      "chunk_id": "bfb3494e-1348-5b95-98b5-9539bdd63f6f"
+    },
+    {
+      "id": "q08",
+      "question": "In the GraphRAG approach to query-focused summarization, how does the system's handling of public figure coverage differ from that of a naive RAG model?",
+      "reference": "GraphRAG provides a comprehensive, structured overview of public figures across multiple entertainment sectors, citing specific examples and data reports, whereas naive RAG focuses on a smaller set of figures and emphasizes personal relationships, offering less breadth and depth.",
+      "doc_id": "23555efb73adfb94",
+      "source": "graphrag-2024.pdf",
+      "title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+      "pages": "20",
+      "chunk_id": "0cfb048b-39c7-5fd7-94fe-dff384fd32b6"
+    },
+    {
+      "id": "q09",
+      "question": "In Retrieval-Augmented Generation, how does the use of external knowledge sources like Wikipedia affect the system’s reliability and potential for bias?",
+      "reference": "RAG’s reliance on external knowledge sources such as Wikipedia means the system may inherit factual inaccuracies and biases present in those sources, potentially leading to misleading or biased outputs.",
+      "doc_id": "62d3275b909c065c",
+      "source": "rag-lewis-2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "pages": "10",
+      "chunk_id": "8d2ce86b-6b9c-5c03-8557-46e721d22b55"
+    },
+    {
+      "id": "q10",
+      "question": "In the Corrective Retrieval Augmented Generation paper, how was the retrieval evaluator fine‑tuned and what labeling scheme was used for relevance scoring?",
+      "reference": "The retrieval evaluator was fine‑tuned on the Self‑RAG version of the PopQA dataset using a lightweight T5‑large model. Positive samples were labeled 1 and negative samples -1, and at inference the evaluator scored relevance from -1 to 1 for each document.",
+      "doc_id": "0e2f3be9769d9301",
+      "source": "corrective-rag-2024.pdf",
+      "title": "Corrective Retrieval Augmented Generation",
+      "pages": "15",
+      "chunk_id": "f8bbfe3a-1c6c-59a3-a08d-3fdf7448e7f0"
+    },
+    {
+      "id": "q11",
+      "question": "In ReAct, how does the flexibility and sparsity of reasoning traces affect the agent's ability to decompose goals and perform commonsense reasoning compared to IM-style prompting?",
+      "reference": "ReAct’s flexible and sparse reasoning traces enable the agent to decompose high‑level goals and apply commonsense reasoning, whereas IM-style prompting, which relies on dense external feedback, often fails to identify finished subgoals or determine next steps, leading to lower success rates.",
+      "doc_id": "23523934e565765a",
+      "source": "react-2022.pdf",
+      "title": "REAC T : SYNERGIZING REASONING AND ACTING IN LANGUAGE MODELS",
+      "pages": "8",
+      "chunk_id": "f1d63e80-d333-5f96-b57d-377fbc7239d0"
+    },
+    {
+      "id": "q12",
+      "question": "In the GraphRAG approach to query-focused summarization, how does the system evaluate the diversity of generated answers?",
+      "reference": "The system compares the breadth of public figures covered and the variety of evidence sources cited, favoring responses that span multiple sectors of the entertainment industry and draw from diverse data sources over those that focus on a smaller group and rely on a single source.",
+      "doc_id": "23555efb73adfb94",
+      "source": "graphrag-2024.pdf",
+      "title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+      "pages": "20",
+      "chunk_id": "73f07d8a-6868-5b86-8751-02d7c985083c"
+    },
+    {
+      "id": "q13",
+      "question": "In Self-RAG, how does the framework use reflection tokens to guide retrieval and critique of generated text?",
+      "reference": "Self-RAG generates special reflection tokens that signal whether retrieval is needed or confirm the output’s relevance, support, or completeness, allowing the model to retrieve passages only when necessary and to critique its own output for factuality.",
+      "doc_id": "53dea3c23b57c451",
+      "source": "self-rag-2023.pdf",
+      "title": "SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION",
+      "pages": "3",
+      "chunk_id": "548c1169-1a6b-550c-9825-72d4ac00c567"
+    },
+    {
+      "id": "q14",
+      "question": "In Corrective Retrieval Augmented Generation, how does the proposed method demonstrate adaptability to different RAG-based approaches?",
+      "reference": "The method is plug‑and‑play and can be implemented into RAG-based approaches, as shown by its significant performance gains across multiple models and datasets.",
+      "doc_id": "0e2f3be9769d9301",
+      "source": "corrective-rag-2024.pdf",
+      "title": "Corrective Retrieval Augmented Generation",
+      "pages": "8",
+      "chunk_id": "1c5a1504-57c9-5ee2-ae25-3b9b2d83aea8"
+    },
+    {
+      "id": "q15",
+      "question": "In GraphRAG, how are the context windows constructed for the different experimental conditions?",
+      "reference": "The context windows are built by shuffling and chunking source texts for map-reduce summarization, and by retrieving text chunks until the token limit is reached; conditions differ only in how the contents of the context window are created, with a fixed 8k token size across all conditions.",
+      "doc_id": "23555efb73adfb94",
+      "source": "graphrag-2024.pdf",
+      "title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+      "pages": "8-9",
+      "chunk_id": "bcc34028-f4d5-5ea7-85f0-5d7fc30ad491"
+    },
+    {
+      "id": "q16",
+      "question": "In Retrieval-Augmented Generation, what causes the retrieval component to collapse and how does this affect the model's performance compared to BART?",
+      "reference": "The retrieval component can collapse when the task requires less explicit factual knowledge or when longer target sequences provide weaker gradients for the retriever. When this happens, the generator learns to ignore the retrieved documents, causing the RAG model to perform equivalently to BART.",
+      "doc_id": "62d3275b909c065c",
+      "source": "rag-lewis-2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "pages": "19",
+      "chunk_id": "b90a65f0-378f-55e2-a818-173d5889e336"
+    },
+    {
+      "id": "q17",
+      "question": "In ReAct, how does adding a reasoning prompt to the action prompt affect the search query formulation?",
+      "reference": "ReAct augments the action prompt with a reasoning prompt, so the system first generates a reasoning step before formulating the search query, as shown by the combined prompt that includes both the action request and the reasoning instruction.",
+      "doc_id": "23523934e565765a",
+      "source": "react-2022.pdf",
+      "title": "REAC T : SYNERGIZING REASONING AND ACTING IN LANGUAGE MODELS",
+      "pages": "22",
+      "chunk_id": "4c5f4a18-a136-5411-8f36-7f70e07edf7b"
+    },
+    {
+      "id": "q18",
+      "question": "In Self-RAG, how are the scores for the ISUSE metric computed from the token probabilities?",
+      "reference": "Self-RAG assigns weighted scores w = {−1, −0.5, 0, 0.5, 1} to the tokens ISUSE = {1, 2, 3, 4, 5} and computes the final score as s(ISUSE) = 5 × Σ_i w_i p(ISUSE = i) / S, where S = Σ_t p(ISUSE = t).",
+      "doc_id": "53dea3c23b57c451",
+      "source": "self-rag-2023.pdf",
+      "title": "SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION",
+      "pages": "19",
+      "chunk_id": "99dbb0ff-e1b0-5f49-af9a-a8243a989ffd"
+    },
+    {
+      "id": "q19",
+      "question": "In Retrieval-Augmented Generation, how does the RAG-Token model differ from the RAG-Sequence model in terms of document usage for generating target tokens?",
+      "reference": "The RAG-Token model draws a different latent document for each target token and marginalizes over these choices, allowing the generator to select content from multiple documents, whereas the RAG-Sequence model uses the same retrieved document to generate the entire sequence.",
+      "doc_id": "62d3275b909c065c",
+      "source": "rag-lewis-2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "pages": "3",
+      "chunk_id": "031d2515-10b7-5bd3-b25a-c86b50bd450c"
+    },
+    {
+      "id": "q20",
+      "question": "How does GraphRAG leverage graph modularity to construct global summaries?",
+      "reference": "GraphRAG recursively creates increasingly global summaries by using the LLM to generate summaries that span the community hierarchy, exploiting the graph’s inherent modularity and the ability to partition it into nested modular communities of closely related nodes.",
+      "doc_id": "23555efb73adfb94",
+      "source": "graphrag-2024.pdf",
+      "title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+      "pages": "3",
+      "chunk_id": "2a4e5a5c-9992-541a-867f-a1002aa70239"
+    },
+    {
+      "id": "q21",
+      "question": "In SELF-RAG, how does the self-reflection mechanism contribute to filtering irrelevant passages and evaluating output quality?",
+      "reference": "SELF-RAG uses self-reflection to process passages in parallel, filtering out irrelevant ones without external models at inference, and it also evaluates aspects of model output quality such as factuality.",
+      "doc_id": "53dea3c23b57c451",
+      "source": "self-rag-2023.pdf",
+      "title": "SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION",
+      "pages": "3",
+      "chunk_id": "156d15db-ac09-5f23-b91b-0cd6d43d8e69"
+    },
+    {
+      "id": "q22",
+      "question": "In REACT, how does the system combine search reformulation and synthesis of the final answer within a single prompt?",
+      "reference": "The prompt includes a search reformulation step where the model may say “maybe I can search/look up x instead”, followed by a synthesis step that produces the final answer in the form “...so the answer is x”. This structure is described in the passage and illustrated in Figure 1(1a-1c).",
+      "doc_id": "23523934e565765a",
+      "source": "react-2022.pdf",
+      "title": "REAC T : SYNERGIZING REASONING AND ACTING IN LANGUAGE MODELS",
+      "pages": "4-5",
+      "chunk_id": "c22601e9-26a5-5bbd-8f89-2ede68c8acf1"
+    },
+    {
+      "id": "q23",
+      "question": "In SELF-RAG, how are reflection tokens used to handle factual contradictions in generated text?",
+      "reference": "SELF-RAG predicts reflection tokens such as \"Contradictory\" when the model output conflicts with the passage, enabling enforcement of hard control and easy verification of model outputs.",
+      "doc_id": "53dea3c23b57c451",
+      "source": "self-rag-2023.pdf",
+      "title": "SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION",
+      "pages": "20-21",
+      "chunk_id": "a97ae7b0-0d0e-5884-803a-f7e19995c610"
+    },
+    {
+      "id": "q24",
+      "question": "In Retrieval-Augmented Generation, how does unconstrained generation compare to extractive approaches on open Natural Questions, WebQuestions, and CuratedTrec?",
+      "reference": "Unconstrained generation outperforms previous extractive approaches on open Natural Questions, WebQuestions, and CuratedTrec, achieving state‑of‑the‑art results.",
+      "doc_id": "62d3275b909c065c",
+      "source": "rag-lewis-2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "pages": "2",
+      "chunk_id": "4596957d-f914-5b76-b075-4d399b137064"
+    },
+    {
+      "id": "q25",
+      "question": "In Corrective Retrieval Augmented Generation, how does the lightweight retrieval evaluator determine when to trigger different knowledge retrieval actions?",
+      "reference": "The evaluator assesses the overall quality of retrieved documents for a query and returns a confidence degree; based on this confidence, different knowledge retrieval actions can be triggered.",
+      "doc_id": "0e2f3be9769d9301",
+      "source": "corrective-rag-2024.pdf",
+      "title": "Corrective Retrieval Augmented Generation",
+      "pages": "1",
+      "chunk_id": "b2f25a7d-d48c-5d36-a54d-3da27e307972"
+    },
+    {
+      "id": "q26",
+      "question": "In Self-RAG, how are reflection tokens used to guide the retrieval and generation process?",
+      "reference": "Self-RAG creates supervised data by prompting GPT‑4 to generate reflection tokens, then distills their knowledge into an in‑house model. For each group of reflection tokens, instances are randomly sampled from the original training data and different instruction prompts are used, such as a Retrieve prompt, to guide the system.",
+      "doc_id": "53dea3c23b57c451",
+      "source": "self-rag-2023.pdf",
+      "title": "SELF-RAG: LEARNING TO RETRIEVE, GENERATE, AND CRITIQUE THROUGH SELF-REFLECTION",
+      "pages": "5",
+      "chunk_id": "2b9538fc-6883-59c9-8e60-65a8bd7b52a2"
+    },
+    {
+      "id": "q27",
+      "question": "How does the GraphRAG approach address the challenge of summarizing global questions over large text corpora?",
+      "reference": "GraphRAG retrieves relevant information from an external knowledge source to enable large language models to answer global questions, such as identifying main themes in a dataset, which traditional RAG methods fail to handle because they are designed for explicit retrieval tasks rather than query‑focused summarization.",
+      "doc_id": "23555efb73adfb94",
+      "source": "graphrag-2024.pdf",
+      "title": "From Local to Global: A GraphRAG Approach to Query-Focused Summarization",
+      "pages": "1",
+      "chunk_id": "1efb1873-3c82-53ec-9e01-02b36765f917"
+    },
+    {
+      "id": "q28",
+      "question": "In Retrieval-Augmented Generation, how are multiple answer annotations used during training for datasets like Natural Questions and WebQuestions?",
+      "reference": "For RAG, each (question, answer) pair is trained separately, leveraging multiple annotation examples to slightly improve accuracy.",
+      "doc_id": "62d3275b909c065c",
+      "source": "rag-lewis-2020.pdf",
+      "title": "Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+      "pages": "17-18",
+      "chunk_id": "64afa468-9dd0-5e92-a6dd-deb3c06e6db6"
+    },
+    {
+      "id": "q29",
+      "question": "In Corrective Retrieval Augmented Generation, how are the confidence thresholds for triggering the three actions determined across different datasets?",
+      "reference": "The thresholds are set empirically: (0.59, -0.99) for PopQA, (0.5, -0.91) for PubQA and ArcChallenge, and (0.95, -0.91) for Biography.",
+      "doc_id": "0e2f3be9769d9301",
+      "source": "corrective-rag-2024.pdf",
+      "title": "Corrective Retrieval Augmented Generation",
+      "pages": "15",
+      "chunk_id": "469c4274-6b82-5d94-9c52-0ef760de1ad7"
+    },
+    {
+      "id": "q30",
+      "question": "In ReAct + CoT-SC, how does the number of CoT-SC samples affect the performance compared to using only ReAct or CoT-SC alone?",
+      "reference": "The passage shows that ReAct + CoT-SC methods outperform CoT-SC across different numbers of samples, reaching CoT-SC performance with only 3–5 samples while using 21 samples for CoT-SC alone, indicating that combining ReAct with CoT-SC yields significant gains even with fewer samples.",
+      "doc_id": "23523934e565765a",
+      "source": "react-2022.pdf",
+      "title": "REAC T : SYNERGIZING REASONING AND ACTING IN LANGUAGE MODELS",
+      "pages": "6",
+      "chunk_id": "6b2ced93-cfb6-56ad-a814-10e14b43d161"
+    }
+  ]
+}

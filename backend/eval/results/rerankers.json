@@ -1,0 +1,137 @@
+[
+  {
+    "reranker": "none (hybrid only)",
+    "context": false,
+    "ms_per_query": 0,
+    "strict": {
+      "hit@1": 0.4667,
+      "hit@5": 0.7667,
+      "mrr@10": 0.5744
+    },
+    "lenient": {
+      "hit@1": 0.5333,
+      "hit@5": 0.8667,
+      "mrr@10": 0.6422
+    }
+  },
+  {
+    "reranker": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "context": false,
+    "ms_per_query": 741,
+    "strict": {
+      "hit@1": 0.3333,
+      "hit@5": 0.6667,
+      "mrr@10": 0.487
+    },
+    "lenient": {
+      "hit@1": 0.3667,
+      "hit@5": 0.7667,
+      "mrr@10": 0.527
+    }
+  },
+  {
+    "reranker": "Xenova/ms-marco-MiniLM-L-6-v2",
+    "context": true,
+    "ms_per_query": 986,
+    "strict": {
+      "hit@1": 0.4667,
+      "hit@5": 0.8333,
+      "mrr@10": 0.635
+    },
+    "lenient": {
+      "hit@1": 0.5667,
+      "hit@5": 0.9,
+      "mrr@10": 0.7011
+    }
+  },
+  {
+    "reranker": "Xenova/ms-marco-MiniLM-L-12-v2",
+    "context": false,
+    "ms_per_query": 1476,
+    "strict": {
+      "hit@1": 0.4,
+      "hit@5": 0.7,
+      "mrr@10": 0.5272
+    },
+    "lenient": {
+      "hit@1": 0.4667,
+      "hit@5": 0.7667,
+      "mrr@10": 0.5885
+    }
+  },
+  {
+    "reranker": "Xenova/ms-marco-MiniLM-L-12-v2",
+    "context": true,
+    "ms_per_query": 1961,
+    "strict": {
+      "hit@1": 0.6,
+      "hit@5": 0.8,
+      "mrr@10": 0.6898
+    },
+    "lenient": {
+      "hit@1": 0.7,
+      "hit@5": 0.8667,
+      "mrr@10": 0.7792
+    }
+  },
+  {
+    "reranker": "jinaai/jina-reranker-v1-turbo-en",
+    "context": false,
+    "ms_per_query": 972,
+    "strict": {
+      "hit@1": 0.4,
+      "hit@5": 0.7,
+      "mrr@10": 0.5236
+    },
+    "lenient": {
+      "hit@1": 0.4667,
+      "hit@5": 0.7667,
+      "mrr@10": 0.5801
+    }
+  },
+  {
+    "reranker": "jinaai/jina-reranker-v1-turbo-en",
+    "context": true,
+    "ms_per_query": 1300,
+    "strict": {
+      "hit@1": 0.5333,
+      "hit@5": 0.8,
+      "mrr@10": 0.6372
+    },
+    "lenient": {
+      "hit@1": 0.6333,
+      "hit@5": 0.8333,
+      "mrr@10": 0.7144
+    }
+  },
+  {
+    "reranker": "BAAI/bge-reranker-base",
+    "context": false,
+    "ms_per_query": 4653,
+    "strict": {
+      "hit@1": 0.5333,
+      "hit@5": 0.8667,
+      "mrr@10": 0.6606
+    },
+    "lenient": {
+      "hit@1": 0.6,
+      "hit@5": 0.8667,
+      "mrr@10": 0.7067
+    }
+  },
+  {
+    "reranker": "BAAI/bge-reranker-base",
+    "context": true,
+    "ms_per_query": 6011,
+    "strict": {
+      "hit@1": 0.6,
+      "hit@5": 0.8333,
+      "mrr@10": 0.7031
+    },
+    "lenient": {
+      "hit@1": 0.6667,
+      "hit@5": 0.8333,
+      "mrr@10": 0.7364
+    }
+  }
+]

@@ -51,8 +51,15 @@ class Retriever:
 
     def rerank(self, query: str, hits: list[Hit]) -> list[Hit]:
         """Cross-encoder reads (query, chunk) pairs together: slower but far more precise
-        than comparing two independently computed embeddings."""
-        scores = list(self.m.reranker.rerank(query, [h.text for h in hits]))
+        than comparing two independently computed embeddings.
+
+        The chunk's context header goes in too. Questions name the method ("In Self-RAG,
+        ...") while the chunk text often doesn't; without the header the reranker can't tell
+        which paper a chunk is from. Measured on the eval set: MRR@10 0.487 -> 0.635 (L6),
+        0.527 -> 0.690 (L12). See `python -m app.cli eval-rerankers`.
+        """
+        docs = [f"{h.context}\n{h.text}" if h.context else h.text for h in hits]
+        scores = list(self.m.reranker.rerank(query, docs))
         for hit, score in zip(hits, scores):
             hit.scores["rerank"] = float(score)
         return sorted(hits, key=lambda h: h.scores["rerank"], reverse=True)

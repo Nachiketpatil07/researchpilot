@@ -22,7 +22,9 @@ class Settings(BaseSettings):
     # Local models (all run on CPU via fastembed / ONNX)
     dense_model: str = "BAAI/bge-small-en-v1.5"
     sparse_model: str = "Qdrant/bm25"
-    rerank_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
+    # Chosen by `python -m app.cli eval-rerankers`: best quality/latency on CPU.
+    # Use Xenova/ms-marco-MiniLM-L-6-v2 for ~2x faster reranking at lower accuracy.
+    rerank_model: str = "Xenova/ms-marco-MiniLM-L-12-v2"
 
     # Storage
     # Index, model cache, uploads and samples. Kept on a short path by default because
