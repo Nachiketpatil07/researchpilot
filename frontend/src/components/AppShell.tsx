@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { API_URL, getHealth, listDocuments, type DocumentInfo, type Health } from "@/lib/api";
+import { apiLabel, getHealth, listDocuments, type DocumentInfo, type Health } from "@/lib/api";
 import AskView from "./AskView";
 import EvalView from "./EvalView";
 import Playground from "./Playground";
@@ -31,12 +31,15 @@ export default function AppShell() {
   // Poll the backend (an external system): health + document list every 15s.
   useEffect(() => {
     const first = setTimeout(refresh, 0);
-    const id = setInterval(refresh, 15000);
+    const id = setInterval(refresh, 10000);
     return () => {
       clearTimeout(first);
       clearInterval(id);
     };
   }, [refresh]);
+
+  const replayMode = Boolean(health?.replay);
+  const localBackend = /localhost|127\.0\.0\.1/.test(apiLabel());
 
   const askDisabled = backendDown
     ? "Backend offline."
@@ -103,21 +106,59 @@ export default function AppShell() {
           </a>
         </header>
 
+        {replayMode && (
+          <div className="border-b border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-200">
+            <span className="font-medium">Replay demo.</span> You&apos;re watching recorded runs of the real agent
+            (same events, same pace). Try the example questions and playground queries; the Evaluation tab shows the
+            real results.{" "}
+            <a
+              href="https://github.com/Nachiketpatil07/researchpilot#setup-windows"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              Run it locally
+            </a>{" "}
+            to ask anything.
+          </div>
+        )}
+
         {backendDown && (
           <div className="border-b border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
-            Can&apos;t reach the backend at <code className="font-mono">{API_URL}</code>. Start it from{" "}
-            <code className="font-mono">backend/</code> with{" "}
-            <code className="font-mono">uvicorn app.api:app --port 8000</code>.
+            {localBackend ? (
+              <>
+                Can&apos;t reach the backend at <code className="font-mono">{apiLabel()}</code>. Start it from{" "}
+                <code className="font-mono">backend/</code> with{" "}
+                <code className="font-mono">uvicorn app.api:app --port 8000</code>.
+              </>
+            ) : (
+              <>
+                Can&apos;t reach the live backend at <code className="font-mono">{apiLabel()}</code>. The tunnel may
+                be closed or the server still starting; this page retries automatically.{" "}
+                <button
+                  type="button"
+                  className="underline"
+                  onClick={() => {
+                    // Forget the tunnel address and reload without ?api= (full reload resets the mode).
+                    try { sessionStorage.clear(); } catch {}
+                    window.location.href = window.location.pathname;
+                  }}
+                >
+                  Switch to the replay demo
+                </button>
+                .
+              </>
+            )}
           </div>
         )}
 
         <div className="min-h-0 flex-1">
           {/* Both views stay mounted so switching tabs keeps the conversation. */}
           <div className={tab === "ask" ? "h-full" : "hidden"}>
-            <AskView disabledReason={askDisabled} />
+            <AskView disabledReason={askDisabled} examplesOnly={replayMode} />
           </div>
           <div className={tab === "playground" ? "h-full" : "hidden"}>
-            <Playground disabled={backendDown || (health?.chunks ?? 0) === 0} />
+            <Playground disabled={backendDown || (health?.chunks ?? 0) === 0} examplesOnly={replayMode} />
           </div>
           <div className={tab === "eval" ? "h-full" : "hidden"}>
             <EvalView active={tab === "eval"} />

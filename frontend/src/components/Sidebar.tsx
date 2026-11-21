@@ -57,6 +57,7 @@ export default function Sidebar({
   }
 
   const llmReady = health?.llm.ready;
+  const demo = Boolean(health?.demo);
 
   return (
     <aside className="flex h-full w-72 flex-col border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
@@ -70,7 +71,9 @@ export default function Sidebar({
             <span
               className={`h-2 w-2 rounded-full ${backendDown ? "bg-red-500" : llmReady ? "bg-emerald-500" : health ? "bg-amber-500" : "bg-zinc-300"}`}
             />
-            {backendDown
+            {health?.replay
+              ? `Replay · recorded with ${health.llm.models?.answer ?? "the live backend"}`
+              : backendDown
               ? "Backend offline"
               : !health
                 ? "Connecting…"
@@ -102,20 +105,46 @@ export default function Sidebar({
                   {d.pages} pp · {d.chunks} chunks
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => remove(d)}
-                disabled={deleting === d.doc_id}
-                title="Remove from index"
-                className="shrink-0 rounded p-1 text-zinc-400 opacity-0 group-hover:opacity-100 hover:bg-zinc-200 hover:text-red-600 focus:opacity-100 dark:hover:bg-zinc-800"
-              >
-                {deleting === d.doc_id ? <Spinner /> : <IconTrash />}
-              </button>
+              {!demo && (
+                <button
+                  type="button"
+                  onClick={() => remove(d)}
+                  disabled={deleting === d.doc_id}
+                  title="Remove from index"
+                  className="shrink-0 rounded p-1 text-zinc-400 opacity-0 group-hover:opacity-100 hover:bg-zinc-200 hover:text-red-600 focus:opacity-100 dark:hover:bg-zinc-800"
+                >
+                  {deleting === d.doc_id ? <Spinner /> : <IconTrash />}
+                </button>
+              )}
             </li>
           ))}
         </ul>
       </div>
 
+      {demo ? (
+        <div className="border-t border-zinc-200 p-4 text-xs leading-relaxed text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+          {health?.replay ? (
+            <>
+              <span className="font-medium text-zinc-700 dark:text-zinc-200">Replay demo</span> over five RAG papers:
+              recorded runs of the real backend. To ask your own questions or use your own documents,{" "}
+            </>
+          ) : (
+            <>
+              <span className="font-medium text-zinc-700 dark:text-zinc-200">Read-only demo</span> over five RAG
+              papers, with a per-visitor hourly question limit. To use your own documents,{" "}
+            </>
+          )}
+          <a
+            href="https://github.com/Nachiketpatil07/researchpilot#setup-windows"
+            target="_blank"
+            rel="noreferrer"
+            className="text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            run it locally
+          </a>
+          .
+        </div>
+      ) : (
       <div className="border-t border-zinc-200 p-3 dark:border-zinc-800">
         <label
           onDragOver={(e) => {
@@ -152,6 +181,7 @@ export default function Sidebar({
           </p>
         )}
       </div>
+      )}
     </aside>
   );
 }

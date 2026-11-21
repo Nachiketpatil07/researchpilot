@@ -41,6 +41,13 @@ class Settings(BaseSettings):
     retrieve_k: int = 20  # candidates from each retriever before reranking (CPU cost scales with this)
     rerank_top_n: int = 6  # chunks passed to the LLM
 
+    # Public deployment
+    demo_mode: bool = False  # read-only documents + per-IP rate limits
+    cors_origins: str = ""  # extra allowed origins, comma-separated
+    cors_origin_regex: str = ""  # e.g. https://.*\.vercel\.app
+    ask_limit_per_hour: int = 20  # per client IP, demo mode only
+    search_limit_per_hour: int = 120
+
     @property
     def qdrant_path(self) -> Path:
         return self.data_dir / "qdrant"

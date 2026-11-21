@@ -24,7 +24,7 @@ function hue(id: string) {
   return h;
 }
 
-export default function Playground({ disabled }: { disabled: boolean }) {
+export default function Playground({ disabled, examplesOnly = false }: { disabled: boolean; examplesOnly?: boolean }) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Partial<Record<RetrievalMode, SearchResult>>>({});
   const [loading, setLoading] = useState<RetrievalMode | null>(null);
@@ -70,13 +70,13 @@ export default function Playground({ disabled }: { disabled: boolean }) {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search query…"
-            disabled={disabled}
+            placeholder={examplesOnly ? "Replay demo: pick an example query below" : "Search query…"}
+            disabled={disabled || examplesOnly}
             className="flex-1 rounded-xl border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900"
           />
           <button
             type="submit"
-            disabled={disabled || !query.trim() || loading !== null}
+            disabled={disabled || examplesOnly || !query.trim() || loading !== null}
             className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-40"
           >
             {loading ? <Spinner /> : <IconSearch />} Compare

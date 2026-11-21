@@ -223,10 +223,44 @@ Runtime data (index, model cache, uploads, samples) lives in `~/.researchpilot` 
 | `done` | `answer`, `cited` source numbers |
 | `error` | `message` |
 
+## Deployment
+
+The frontend is a static Next.js site and runs in two modes:
+
+| Mode | When | What visitors get |
+|---|---|---|
+| **Replay** | no backend configured (the hosted Vercel site) | Recorded runs of the real backend (every streamed event at its real timing) for the example questions and playground queries, plus the real evaluation report. Labelled as a replay in the UI. |
+| **Live** | `NEXT_PUBLIC_API_URL` is set, or the page is opened with `?api=https://<name>.trycloudflare.com` | The real backend. Only Cloudflare tunnel and localhost addresses are accepted from a link. |
+
+**Why not host the backend for free?** As of late 2026, Hugging Face requires PRO for Docker
+Spaces, and the remaining free tiers (e.g. Render: 0.1 CPU, 512 MB) are too small for local
+embedding + cross-encoder models. So the always-on site replays real runs, and the live
+backend runs on a laptop when needed:
+
+```powershell
+winget install --id Cloudflare.cloudflared                           # once
+powershell -ExecutionPolicy Bypass -File deploy\live-demo.ps1 -Site https://<your-site>.vercel.app
+# prints: https://<your-site>.vercel.app/?api=https://<random>.trycloudflare.com
+```
+
+`live-demo.ps1` starts the API in **demo mode**: documents are read-only, each visitor gets
+20 questions and 120 searches per hour, CORS allows `*.vercel.app`, and provider errors are
+shown without account details.
+
+Other pieces: `python deploy/record_replay.py` re-records the replay from a running backend
+(it pauses between runs and refuses to save runs degraded by rate limits);
+`backend/Dockerfile` builds a CPU-only image for any Docker host (`deploy/deploy_space.py`
+publishes it to a Hugging Face Space if you have PRO).
+
+**Free-tier budget.** Groq's free tier allows 8k tokens per minute and 200k tokens per day
+per model. One agent question uses several thousand tokens across planning, grading,
+answering and verification. Bursts hit the per-minute limit, and a full evaluation run with
+the large model as judge used the whole daily budget.
+
 ## Roadmap
 
 1. ~~Core: ingest, hybrid search, rerank, cited answers~~
 2. ~~LangGraph agent: query decomposition, relevance grading, query rewrite, web-search fallback, groundedness check~~
 3. ~~Next.js UI: live agent steps, citations, retrieval playground~~
 4. ~~Evaluation: synthetic test set, hit@k / MRR, reranker comparison, LLM-judged correctness and faithfulness~~
-5. Deploy: Vercel + Hugging Face Spaces
+5. Deploy: replay site on Vercel + live backend through a tunnel (replay recording pending the Groq daily reset)

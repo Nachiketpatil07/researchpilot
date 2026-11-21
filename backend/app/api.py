@@ -4,18 +4,21 @@ import asyncio
 import json
 import logging
 import re
+import threading
 import time
+from collections import defaultdict, deque
 from collections.abc import Iterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
 from typing import Literal
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from .agent.graph import run_agent
+from .config import get_settings
 from .generation.answer import cited_numbers, stream_answer
 from .ingest.loaders import SUPPORTED
 from .ingest.pipeline import ingest_file
@@ -33,13 +36,63 @@ async def lifespan(_app: FastAPI):
     get_services().close()
 
 
+settings = get_settings()
+
 app = FastAPI(title="ResearchPilot API", version="0.1.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"]
+    + [o.strip() for o in settings.cors_origins.split(",") if o.strip()],
+    allow_origin_regex=settings.cors_origin_regex or None,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+class RateLimiter:
+    """Sliding one-hour window per client IP. In-memory: fine for a single small server."""
+
+    def __init__(self):
+        self._hits: dict[str, deque[float]] = defaultdict(deque)
+        self._lock = threading.Lock()
+
+    def check(self, key: str, limit: int, window: float = 3600) -> int | None:
+        """Record a hit; return seconds to wait if the limit is exceeded, else None."""
+        now = time.monotonic()
+        with self._lock:
+            q = self._hits[key]
+            while q and now - q[0] > window:
+                q.popleft()
+            if len(q) >= limit:
+                return int(window - (now - q[0])) + 1
+            q.append(now)
+            return None
+
+
+limiter = RateLimiter()
+
+
+def _client_ip(request: Request) -> str:
+    # Behind a proxy (Hugging Face, Vercel) the real client is the first X-Forwarded-For entry.
+    fwd = request.headers.get("x-forwarded-for", "")
+    return fwd.split(",")[0].strip() or (request.client.host if request.client else "unknown")
+
+
+def _demo_limit(request: Request, bucket: str, limit: int) -> None:
+    if not settings.demo_mode:
+        return
+    wait = limiter.check(f"{bucket}:{_client_ip(request)}", limit)
+    if wait is not None:
+        raise HTTPException(
+            429,
+            f"Demo limit reached ({bucket}s: {limit} per hour per visitor). Try again in {wait // 60 + 1} min, "
+            "or run ResearchPilot locally for unlimited use.",
+        )
+
+
+def _require_writable() -> None:
+    if settings.demo_mode:
+        raise HTTPException(403, "This is a read-only demo. Run ResearchPilot locally to add your own documents.")
 
 Mode = Literal["dense", "sparse", "hybrid", "hybrid_rerank"]
 
@@ -69,7 +122,7 @@ def health():
         llm_info = {"provider": llm.provider, "models": llm.models, "ready": True}
     except LLMNotConfigured as exc:
         llm_info = {"provider": svc.settings.llm_provider, "ready": False, "error": str(exc)}
-    return {"status": "ok", "chunks": svc.store.count(), "llm": llm_info}
+    return {"status": "ok", "chunks": svc.store.count(), "llm": llm_info, "demo": settings.demo_mode}
 
 
 @app.get("/documents")
@@ -79,6 +132,7 @@ def list_documents():
 
 @app.post("/documents")
 def upload_documents(files: list[UploadFile] = File(...)):
+    _require_writable()
     svc = get_services()
     svc.settings.uploads_dir.mkdir(parents=True, exist_ok=True)
     llm = svc.llm_or_none()
@@ -99,6 +153,7 @@ def upload_documents(files: list[UploadFile] = File(...)):
 
 @app.delete("/documents/{doc_id}")
 def delete_document(doc_id: str):
+    _require_writable()
     store = get_services().store
     if not store.has_document(doc_id):
         raise HTTPException(404, "document not found")
@@ -107,8 +162,9 @@ def delete_document(doc_id: str):
 
 
 @app.post("/search")
-def search(req: SearchRequest):
+def search(req: SearchRequest, request: Request):
     """Retrieval only: lets the UI compare dense / sparse / hybrid / hybrid+rerank."""
+    _demo_limit(request, "search", settings.search_limit_per_hour)
     res = get_services().retriever.retrieve(req.query, req.mode, req.top_n)
     return {
         "query": res.query,
@@ -127,6 +183,16 @@ def eval_latest():
     if not LATEST_PATH.exists():
         raise HTTPException(404, "No evaluation report yet. Run: python -m app.cli eval-run")
     return json.loads(LATEST_PATH.read_text(encoding="utf-8"))
+
+
+def public_error(exc: Exception) -> str:
+    """Error text that is safe to show any visitor: no provider account ids, no billing links."""
+    if type(exc).__name__ == "RateLimitError":
+        per_day = "per day" in str(exc) or "TPD" in str(exc)
+        return ("The LLM provider's free daily token limit is used up; try again later."
+                if per_day else "The LLM provider is rate-limiting requests; try again in a minute.")
+    msg = re.sub(r"\borg_[A-Za-z0-9]+", "org_[redacted]", f"{type(exc).__name__}: {exc}")
+    return re.sub(r"https?://\S*billing\S*", "", msg)[:300]
 
 
 def _sse(event: str, data) -> str:
@@ -155,11 +221,12 @@ def _pipeline_events(svc, llm, req: AskRequest) -> Iterator[dict]:
 
 
 @app.post("/ask")
-def ask(req: AskRequest):
+def ask(req: AskRequest, request: Request):
     """Server-Sent Events: step* -> sources -> token* -> [check] -> done, or error.
 
     Each event's data is a JSON object; `step` events carry stage/status/detail/ms.
     """
+    _demo_limit(request, "question", settings.ask_limit_per_hour)
     svc = get_services()
 
     def events() -> Iterator[str]:
@@ -175,6 +242,6 @@ def ask(req: AskRequest):
                 yield _sse(name, ev)
         except Exception as exc:  # surface provider errors (rate limits etc.) to the UI
             logging.exception("ask failed")
-            yield _sse("error", {"message": f"{type(exc).__name__}: {exc}"})
+            yield _sse("error", {"message": public_error(exc)})
 
     return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})

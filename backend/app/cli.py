@@ -129,6 +129,28 @@ def cmd_ask(args) -> None:
             print(f"== groundedness: {ev['grounded']}" + "".join(f"\n   - unsupported: {c}" for c in ev["unsupported"]))
 
 
+def cmd_warm_models(_args) -> None:
+    """Download and load every local model (used at Docker build time to bake them in)."""
+    m = get_services().local_models
+    print(f"dense: {m.settings.dense_model} ({m.dense_dim} dims)")
+    list(m.sparse.embed(["warm up"]))
+    print(f"sparse: {m.settings.sparse_model}")
+    list(m.reranker.rerank("warm up", ["model"]))
+    print(f"reranker: {m.settings.rerank_model}")
+
+
+def cmd_bootstrap(args) -> None:
+    """Container start: make sure the demo papers are indexed (no-op if the index has data)."""
+    svc = get_services()
+    if svc.store.count() > 0:
+        print(f"Index ready: {svc.store.count()} chunks")
+        return
+    if not any(svc.settings.samples_dir.glob("*.pdf")):
+        cmd_samples(args)
+    args.path, args.force = str(svc.settings.samples_dir), False
+    cmd_ingest(args)
+
+
 def cmd_eval_generate(args) -> None:
     from .evaluation.testset import generate_testset, save_testset
 
@@ -213,6 +235,9 @@ def main() -> None:
     s.add_argument("--judge", choices=["answer", "fast"], default="fast", help="model tier used as judge")
     s.add_argument("--limit", type=int, default=0, help="only the first N questions")
     s.set_defaults(fn=cmd_eval_run)
+
+    sub.add_parser("warm-models", help="download/load all local models").set_defaults(fn=cmd_warm_models)
+    sub.add_parser("bootstrap", help="index the demo papers if the index is empty").set_defaults(fn=cmd_bootstrap)
 
     sub.add_parser("eval-rerankers", help="compare cross-encoder rerankers on the test set").set_defaults(
         fn=cmd_eval_rerankers

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { streamAsk, type AskEvent, type CheckEvent, type Source } from "@/lib/api";
+import { REPLAY_HINT, streamAsk, type AskEvent, type CheckEvent, type Source } from "@/lib/api";
 import AnswerMarkdown from "./AnswerMarkdown";
 import SourceCard from "./SourceCard";
 import StepTimeline, { type Step } from "./StepTimeline";
@@ -146,7 +146,7 @@ function TurnView({ turn }: { turn: Turn }) {
   );
 }
 
-export default function AskView({ disabledReason }: { disabledReason?: string }) {
+export default function AskView({ disabledReason, examplesOnly = false }: { disabledReason?: string; examplesOnly?: boolean }) {
   const [turns, setTurns] = useState<Turn[]>([]);
   const [input, setInput] = useState("");
   const [agent, setAgent] = useState(true);
@@ -192,7 +192,11 @@ export default function AskView({ disabledReason }: { disabledReason?: string })
       update(id, (t) => ({
         ...t,
         status: "error",
-        error: aborted ? "Stopped." : `Could not reach the backend: ${(err as Error).message}`,
+        error: aborted
+          ? "Stopped."
+          : (err as Error).message.startsWith("Demo limit") || (err as Error).message === REPLAY_HINT
+            ? (err as Error).message
+            : `Could not reach the backend: ${(err as Error).message}`,
         steps: t.steps.map((s) => (s.status === "running" ? { ...s, status: "error" } : s)),
       }));
     } finally {
@@ -241,6 +245,21 @@ export default function AskView({ disabledReason }: { disabledReason?: string })
           }}
         >
           {disabledReason && <p className="mb-2 text-xs text-amber-600 dark:text-amber-400">{disabledReason}</p>}
+          {examplesOnly && turns.length > 0 && (
+            <div className="mb-2 flex flex-wrap gap-1.5">
+              {EXAMPLES.map((e) => (
+                <button
+                  key={e.q}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => ask(e.q)}
+                  className="rounded-full border border-zinc-200 px-2.5 py-0.5 text-xs text-zinc-600 hover:border-indigo-300 disabled:opacity-50 dark:border-zinc-800 dark:text-zinc-300"
+                >
+                  {e.q}
+                </button>
+              ))}
+            </div>
+          )}
           <div className="flex items-end gap-2 rounded-2xl border border-zinc-300 bg-white p-2 shadow-sm focus-within:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900">
             <textarea
               ref={textareaRef}
@@ -253,8 +272,8 @@ export default function AskView({ disabledReason }: { disabledReason?: string })
                 }
               }}
               rows={1}
-              placeholder="Ask a question about your documents…"
-              disabled={Boolean(disabledReason)}
+              placeholder={examplesOnly ? "Replay demo: pick an example question above" : "Ask a question about your documents…"}
+              disabled={Boolean(disabledReason) || examplesOnly}
               className="max-h-40 flex-1 resize-none bg-transparent px-2 py-1.5 text-[15px] outline-none placeholder:text-zinc-400"
             />
             {busy ? (
@@ -269,7 +288,7 @@ export default function AskView({ disabledReason }: { disabledReason?: string })
             ) : (
               <button
                 type="submit"
-                disabled={!input.trim() || Boolean(disabledReason)}
+                disabled={!input.trim() || Boolean(disabledReason) || examplesOnly}
                 className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-40"
                 title="Ask"
               >

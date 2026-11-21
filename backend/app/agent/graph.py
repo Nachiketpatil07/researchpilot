@@ -24,7 +24,7 @@ from ddgs import DDGS
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 
-from ..generation.answer import cited_numbers, format_sources, stream_answer
+from ..generation.answer import cited_numbers, stream_answer
 from ..llm import LLM
 from ..retrieval.store import Hit
 from ..services import Services
@@ -37,6 +37,7 @@ MIN_RELEVANT = 2  # relevant chunks needed before answering from documents alone
 MAX_SOURCES = 8  # chunks passed to the answer model
 RERANK_FLOOR = -3.0  # cross-encoder score below which a chunk is rejected without asking the LLM
 WEB_RESULTS = 5
+VERIFY_EXCERPT = 800  # characters per source shown to the groundedness check
 
 
 class AgentState(TypedDict, total=False):
@@ -235,9 +236,14 @@ def build_agent(services: Services, llm: LLM):
             return {}
         with _Step("verify", "Checking the answer against its sources") as step:
             try:
+                # Excerpts, not full chunks: verify was the largest call in the run, and Groq's
+                # free tier allows 8k tokens per minute per model.
+                excerpts = "\n\n".join(
+                    f"[{i}] {h.title}\n{h.text[:VERIFY_EXCERPT]}" for i, h in enumerate(sources, start=1)
+                )
                 out = llm.complete_json([{
                     "role": "user",
-                    "content": prompts.VERIFY.format(sources=format_sources(sources), answer=state["answer"]),
+                    "content": prompts.VERIFY.format(sources=excerpts, answer=state["answer"]),
                 }])
                 grounded = out.get("grounded") if out.get("grounded") in ("yes", "partial", "no") else "unknown"
                 unsupported = [c for c in out.get("unsupported", []) if isinstance(c, str)][:3]
